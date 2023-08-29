@@ -14,6 +14,15 @@ export default function getStartState() {
   return cells;
 }
 
+export function findAdjacentCells(cell, cells) {
+  let adjacentCells = [];
+  let cellIndex = cell.index;
+  let adjacentIndeces = [cellIndex - 10, cellIndex - 1, cellIndex + 1, cellIndex + 10]
+  let confirmedIndeces = adjacentIndeces.filter((num) => num <= 99 && num >= 0)
+  adjacentCells = confirmedIndeces.map(num => cells[num])
+  return adjacentCells;
+}
+
 export function setCellValueInGrid(cellToChange, cells) {
   if (cellToChange) {
     const cellsWithNewValue = cells.map((currentCell) => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import GridCell from './GridCell';
-import getStartState, { setCellValueInGrid } from './helpers';
+import getStartState, { findAdjacentCells, setCellValueInGrid } from './helpers';
 import './App.css';
 import { styled } from 'styled-components';
 
@@ -15,10 +15,12 @@ function App() {
   }
 
   function processMove(cell) {
-    const newGridState = setCellValueInGrid(
+    const adjacents = findAdjacentCells(cell, gridState)
+    let newGridState = setCellValueInGrid(
       cell,
       gridState,
     );
+    adjacents.forEach(gridCell => newGridState = setCellValueInGrid(gridCell, newGridState))
     setGridState(newGridState);
   }
 
