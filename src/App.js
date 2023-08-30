@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import GridCell from './GridCell';
-import getStartState, { findAdjacentCells, setCellValueInGrid } from './helpers';
+import { getStartState, processMove, randomizeGrid } from './helpers';
 import './App.css';
 import { styled } from 'styled-components';
 
@@ -10,31 +10,30 @@ function App() {
 
   function getOnClickHandler(cell) {
     return () => {
-      processMove(cell);
+      setGridState(processMove(cell, gridState));
     };
   }
 
-  function processMove(cell) {
-    const adjacents = findAdjacentCells(cell, gridState)
-    let newGridState = setCellValueInGrid(
-      cell,
-      gridState,
-    );
-    adjacents.forEach(gridCell => newGridState = setCellValueInGrid(gridCell, newGridState))
-    setGridState(newGridState);
+  function getOnClickHandlerButton() {
+    return () => {
+      randomizeGrid(gridState, setGridState)
+    }
   }
 
   return (
-    <Container>
-      {gridState.map((cell, ix) => {
-        return (
-          <GridCell
-            toggled={cell.toggled}
-            onClick={getOnClickHandler(cell)}
-          ></GridCell>
-        );
-      })}
-    </Container>
+    <>
+      <Container>
+        {gridState.map((cell, ix) => {
+          return (
+            <GridCell
+              toggled={cell.toggled}
+              onClick={getOnClickHandler(cell)}
+            ></GridCell>
+          );
+        })}
+      </Container>
+      <input type='button' value='Randomize Grid' onClick={getOnClickHandlerButton()}></input>
+    </>
   );
 }
 

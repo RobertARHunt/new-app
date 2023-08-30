@@ -1,4 +1,4 @@
-export default function getStartState() {
+export function getStartState() {
   const cells = [];
   for (let index = 0; index < 100; index++) {
     const y = Math.floor(index / 10);
@@ -7,37 +7,62 @@ export default function getStartState() {
       y,
       x,
       index,
-      toggled: false,
+      toggled: Boolean,
     }
+    newCell.toggled = false;
     cells.push(newCell);
   }
   return cells;
 }
 
-export function findAdjacentCells(cell, cells) {
+export function findCellSet(cell, cells) {
   let adjacentCells = [];
   let cellIndex = cell.index;
-  let adjacentIndeces = [cellIndex - 10, cellIndex - 1, cellIndex + 1, cellIndex + 10]
+  let cellIndexAlterations = []
+  if (cellIndex % 10 !== 0) {
+    cellIndexAlterations.push(-1)
+  }
+  if (cellIndex % 10 !== 9) {
+    cellIndexAlterations.push(1)
+  }
+
+  let adjacentIndeces = [cellIndex - 10, cellIndex + 10]
+  cellIndexAlterations.forEach(alteration => adjacentIndeces.push(cellIndex + alteration))
   let confirmedIndeces = adjacentIndeces.filter((num) => num <= 99 && num >= 0)
   adjacentCells = confirmedIndeces.map(num => cells[num])
+  adjacentCells.push(cell);
   return adjacentCells;
 }
 
-export function setCellValueInGrid(cellToChange, cells) {
-  if (cellToChange) {
-    const cellsWithNewValue = cells.map((currentCell) => {
-      if (cellToChange.index === currentCell.index) {
-        return setCellValue(currentCell, !currentCell.toggled);
+export function toggleCells(cellsToChange, cells) {
+  cellsToChange = cellsToChange.map(cell => cell.index)
+  if (cellsToChange) {
+    const newCells = cells.map((currentCell) => {
+      if (cellsToChange.includes(currentCell.index)) {
+        return newCellObject(currentCell, !currentCell.toggled);
       } else {
         return currentCell;
       }
     });
-    return cellsWithNewValue;
+    return newCells;
   } else {
     return cells;
   }
 }
 
-function setCellValue(cell, newValue) {
+function newCellObject(cell, newValue) {
   return { ...cell, toggled: newValue };
+}
+export function processMove(cell, gridState) {
+  return toggleCells(findCellSet(cell, gridState), gridState);
+}
+
+export function randomizeGrid(gridState, setGridState) {
+  let newGridState = gridState;
+  gridState.forEach((cell) => {
+    if (Math.floor(Math.random() * 10) <= 5) {
+      newGridState = processMove(cell, newGridState, setGridState)
+    }
+  })
+  setGridState(newGridState)
 }
